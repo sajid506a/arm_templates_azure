@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "myvent1",
+            "type": "string"
+        },
+        "vnetAddressPrefix": {
+            "defaultValue": "10.0.0.0/16",
+            "type": "string"
+        },
+           "subnet1Name": {
+            "defaultValue": "subnet1Name",
+            "type": "string"
+        },
+        "subnet1AddressPrefix": {
+            "defaultValue": "10.0.1.0/24",
+            "type": "string"
+        },
+          "subnet2Name": {
+            "defaultValue": "subnet2Name",
+            "type": "string"
+        },
+        "subnet2AddressPrefix": {
+            "defaultValue": "10.0.2.0/24",
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('vnetName')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": ["[parameters('vnetAddressPrefix')]"]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]"
+                        }
+                    }
+                ]
+            }
+
+        }
+    ]
+}
