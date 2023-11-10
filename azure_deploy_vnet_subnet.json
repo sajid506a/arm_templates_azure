@@ -10,7 +10,7 @@
             "defaultValue": "10.0.0.0/16",
             "type": "string"
         },
-           "subnet1Name": {
+        "subnet1Name": {
             "defaultValue": "subnet1Name",
             "type": "string"
         },
@@ -18,12 +18,16 @@
             "defaultValue": "10.0.1.0/24",
             "type": "string"
         },
-          "subnet2Name": {
+        "subnet2Name": {
             "defaultValue": "subnet2Name",
             "type": "string"
         },
         "subnet2AddressPrefix": {
             "defaultValue": "10.0.2.0/24",
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
             "type": "string"
         }
     },
@@ -32,9 +36,10 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-06-01",
             "name": "[parameters('vnetName')]",
+            "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
-                    "addressPrefixes": ["[parameters('vnetAddressPrefix')]"]
+                    "addressPrefixes": "[parameters('vnetAddressPrefix')]"
                 },
                 "subnets": [
                     {
@@ -51,7 +56,6 @@
                     }
                 ]
             }
-
         }
     ]
 }
