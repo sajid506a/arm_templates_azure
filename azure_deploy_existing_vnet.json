@@ -1,143 +1,145 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "vnetName": {
-        "type": "string",
-        "metadata": {
-          "description": "Name of the Virtual Network"
-        }
-      },
-      "defaultVnetAddressPrefix": {
-        "type": "string",
-        "defaultValue": "10.0.0.0/16",
-        "metadata": {
-          "description": "Default address prefix for the Virtual Network"
-        }
-      },
-      "subnet1Name": {
-        "type": "string",
-        "metadata": {
-          "description": "Name of Subnet 1"
-        }
-      },
-      "defaultSubnet1AddressPrefix": {
-        "type": "string",
-        "defaultValue": "10.0.1.0/24",
-        "metadata": {
-          "description": "Default address prefix for Subnet 1"
-        }
-      },
-      "subnet2Name": {
-        "type": "string",
-        "metadata": {
-          "description": "Name of Subnet 2"
-        }
-      },
-      "defaultSubnet2AddressPrefix": {
-        "type": "string",
-        "defaultValue": "10.0.2.0/24",
-        "metadata": {
-          "description": "Default address prefix for Subnet 2"
-        }
-      },
-      "createNewVnet": {
-        "type": "bool",
-        "defaultValue": true,
-        "metadata": {
-          "description": "Specify whether to create a new VNet and subnets if the existing VNet doesn't exist"
-        }
-      },
-      "existingVnetResourceGroup": {
-        "type": "string",
-        "defaultValue": "",
-        "metadata": {
-          "description": "Name of the existing resource group containing the VNet (if applicable)"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Virtual Network"
       }
     },
-    "resources": [
-      {
-        "apiVersion": "2019-04-01",
-        "type": "Microsoft.Network/virtualNetworks",
-        "name": "[parameters('vnetName')]",
-        "condition": "[parameters('createNewVnet')]",
-        "location": "[resourceGroup().location]",
-        "properties": {
-          "addressSpace": {
-            "addressPrefixes": [
-              "[if(empty(parameters('defaultVnetAddressPrefix')), parameters('defaultVnetAddressPrefix'), parameters('defaultVnetAddressPrefix'))]"
-            ]
-          }
-        },
-        "resources": [
-          {
-            "apiVersion": "2019-04-01",
-            "type": "subnets",
-            "name": "[parameters('subnet1Name')]",
-            "condition": "[parameters('createNewVnet')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
-            ],
-            "properties": {
-              "addressPrefix": "[if(empty(parameters('defaultSubnet1AddressPrefix')), parameters('defaultSubnet1AddressPrefix'), parameters('defaultSubnet1AddressPrefix'))]"
-            }
-          },
-          {
-            "apiVersion": "2019-04-01",
-            "type": "subnets",
-            "name": "[parameters('subnet2Name')]",
-            "condition": "[parameters('createNewVnet')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-              "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
-            ],
-            "properties": {
-              "addressPrefix": "[if(empty(parameters('defaultSubnet2AddressPrefix')), parameters('defaultSubnet2AddressPrefix'), parameters('defaultSubnet2AddressPrefix'))]"
-            }
-          }
-        ]
-      },
-      {
-        "apiVersion": "2019-04-01",
-        "type": "Microsoft.Network/virtualNetworks/subnets",
-        "name": "[concat(parameters('vnetName'), '/', parameters('subnet1Name'))]",
-        "condition": "[not(parameters('createNewVnet'))]",
-        "dependsOn": [],
-        "properties": {
-          "addressPrefix": "[if(empty(parameters('defaultSubnet1AddressPrefix')), parameters('defaultSubnet1AddressPrefix'), parameters('defaultSubnet1AddressPrefix'))]"
-        },
-        "location": "[resourceGroup().location]",
-        "tags": {},
-        "resources": [
-          {
-            "apiVersion": "2019-04-01",
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(parameters('vnetName'), '/', parameters('subnet2Name'))]",
-            "condition": "[not(parameters('createNewVnet'))]",
-            "dependsOn": [],
-            "properties": {
-              "addressPrefix": "[if(empty(parameters('defaultSubnet2AddressPrefix')), parameters('defaultSubnet2AddressPrefix'), parameters('defaultSubnet2AddressPrefix'))]"
-            },
-            "location": "[resourceGroup().location]",
-            "tags": {}
-          }
-        ]
+    "defaultVnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Default address prefix for the Virtual Network"
       }
-    ],
-    "outputs": {
-      "vnetResourceId": {
-        "type": "string",
-        "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name')))]"
-      },
-      "subnet1ResourceId": {
-        "type": "string",
-        "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name')), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name')))]"
-      },
-      "subnet2ResourceId": {
-        "type": "string",
-        "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name')), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name')))]"
+    },
+    "subnet1Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Subnet 1"
+      }
+    },
+    "defaultSubnet1AddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.1.0/24",
+      "metadata": {
+        "description": "Default address prefix for Subnet 1"
+      }
+    },
+    "subnet2Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Subnet 2"
+      }
+    },
+    "defaultSubnet2AddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.2.0/24",
+      "metadata": {
+        "description": "Default address prefix for Subnet 2"
+      }
+    },
+    "createNewVnet": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specify whether to create a new VNet and subnets if the existing VNet doesn't exist"
+      }
+    },
+    "existingVnetResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the existing resource group containing the VNet (if applicable)"
       }
     }
+  },
+  "resources": [
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('vnetName')]",
+      "condition": "[parameters('createNewVnet')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[if(empty(parameters('defaultVnetAddressPrefix')), parameters('defaultVnetAddressPrefix'), parameters('defaultVnetAddressPrefix'))]"
+          ]
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2019-04-01",
+          "type": "subnets",
+          "name": "[parameters('subnet1Name')]",
+          "condition": "[parameters('createNewVnet')]",
+          "dependsOn": [
+            "[parameters('vnetName')]"
+          ],
+          "properties": {
+            "addressPrefix": "[if(empty(parameters('defaultSubnet1AddressPrefix')), parameters('defaultSubnet1AddressPrefix'), parameters('defaultSubnet1AddressPrefix'))]"
+          }
+        },
+        {
+          "apiVersion": "2019-04-01",
+          "type": "subnets",
+          "name": "[parameters('subnet2Name')]",
+          "condition": "[parameters('createNewVnet')]",
+          "dependsOn": [
+            "[parameters('vnetName')]",
+            "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+          ],
+          "properties": {
+            "addressPrefix": "[if(empty(parameters('defaultSubnet2AddressPrefix')), parameters('defaultSubnet2AddressPrefix'), parameters('defaultSubnet2AddressPrefix'))]"
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "name": "[concat(parameters('vnetName'), '/', parameters('subnet1Name'))]",
+      "condition": "[not(parameters('createNewVnet'))]",
+      "dependsOn": [
+        "[parameters('vnetName')]"
+      ],
+      "properties": {
+        "addressPrefix": "[if(empty(parameters('defaultSubnet1AddressPrefix')), parameters('defaultSubnet1AddressPrefix'), parameters('defaultSubnet1AddressPrefix'))]"
+      },
+      "location": "[resourceGroup().location]",
+      "tags": {}
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "name": "[concat(parameters('vnetName'), '/', parameters('subnet2Name'))]",
+      "condition": "[not(parameters('createNewVnet'))]",
+      "dependsOn": [
+        "[parameters('vnetName')]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+      ],
+      "properties": {
+        "addressPrefix": "[if(empty(parameters('defaultSubnet2AddressPrefix')), parameters('defaultSubnet2AddressPrefix'), parameters('defaultSubnet2AddressPrefix'))]"
+      },
+      "location": "[resourceGroup().location]",
+      "tags": {}
+    }
+  ],
+  "outputs": {
+    "vnetResourceId": {
+      "type": "string",
+      "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetResourceGroup'), parameters('vnetName')))]"
+    },
+    "subnet1ResourceId": {
+      "type": "string",
+      "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name')), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetResourceGroup'), parameters('vnetName'), parameters('subnet1Name')))]"
+    },
+    "subnet2ResourceId": {
+      "type": "string",
+      "value": "[if(parameters('createNewVnet'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name')), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetResourceGroup'), parameters('vnetName'), parameters('subnet2Name')))]"
+    }
   }
-  
+}
